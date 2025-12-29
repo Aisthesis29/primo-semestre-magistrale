@@ -120,7 +120,7 @@ func biblioteca() {
 		case r := <-when_biblioteca(nStudenti_t+nStudenti_m < MAX && ((len(entraUtente_biblioteca[2]) == 0 && len(entraUtente_biblioteca[3]) == 0) || nStudenti_m <= nStudenti_t), entraUtente_biblioteca[0]): //mag+laureando
 			nStudenti_m++
 			r.ack <- 1
-		case r := <-when_biblioteca(nStudenti_t+nStudenti_m < MAX && ((len(entraUtente_biblioteca[2]) == 0 && len(entraUtente_biblioteca[3]) == 0 && len(entraUtente_biblioteca[1]) == 0) || nStudenti_m <= nStudenti_t), entraUtente_biblioteca[1]): //mag+laureando
+		case r := <-when_biblioteca(nStudenti_t+nStudenti_m < MAX && ((len(entraUtente_biblioteca[2]) == 0 && len(entraUtente_biblioteca[3]) == 0 && len(entraUtente_biblioteca[0]) == 0) || nStudenti_m <= nStudenti_t), entraUtente_biblioteca[1]): //mag+laureando
 			nStudenti_m++
 			r.ack <- 1
 		case r := <-when_biblioteca(nStudenti_t+nStudenti_m < MAX && ((len(entraUtente_biblioteca[0]) == 0 && len(entraUtente_biblioteca[1]) == 0) || nStudenti_m > nStudenti_t), entraUtente_biblioteca[2]): //tr+laureando
