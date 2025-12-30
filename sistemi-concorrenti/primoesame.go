@@ -14,12 +14,12 @@ const MAX = 8
 const FUN = 0
 const FISIO = 1
 
-type Richiesta_portineria struct {
+type Richiesta struct {
 	id        int
 	documento int
 	ack       chan int
 }
-type Richiesta_biblioteca struct {
+type Richiesta struct {
 	badge int
 	ack   chan int
 }
@@ -29,11 +29,11 @@ var array [MAXPROC]int
 var Area [2]string = [2]string{"portineria", "biblioteca"}
 
 // CANALI:
-var entraUtente_portineria chan Richiesta_portineria
-var uscitaUtente_portineria chan Richiesta_portineria
+var entraUtente_portineria chan Richiesta
+var uscitaUtente_portineria chan Richiesta
 
-var entraUtente_biblioteca [4]chan Richiesta_biblioteca
-var uscitaUtente_biblioteca [4]chan Richiesta_biblioteca
+var entraUtente_biblioteca [4]chan Richiesta
+var uscitaUtente_biblioteca [4]chan Richiesta
 
 // CANALI per terminazione:
 var done = make(chan bool)
@@ -41,14 +41,14 @@ var termina = make(chan bool)
 var TerminaCentro = make(chan bool)
 
 // funzioni:
-func when_portineria(b bool, c chan Richiesta_portineria) chan Richiesta_portineria {
+func when_portineria(b bool, c chan Richiesta) chan Richiesta {
 	if !b {
 		return nil
 	}
 	return c
 }
 
-func when_biblioteca(b bool, c chan Richiesta_biblioteca) chan Richiesta_biblioteca {
+func when_biblioteca(b bool, c chan Richiesta) chan Richiesta {
 	if !b {
 		return nil
 	}
@@ -66,8 +66,8 @@ func Utente(id int) {
 	badge := rand.Intn(4)          //priorita' badge
 	documento := rand.Intn(400000) //priorita' badge
 
-	r := Richiesta_portineria{id, documento, make(chan int)}
-	r1 := Richiesta_biblioteca{badge, make(chan int)}
+	r := Richiesta{id, documento, make(chan int)}
+	r1 := Richiesta{badge, make(chan int)}
 	portineria := 0
 	biblioteca := 1
 	fmt.Printf("[Utente %d] Vuole entrare in  %s\n", id, Area[portineria])
@@ -151,12 +151,12 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	// Inizializzazione canali
-	entraUtente_portineria = make(chan Richiesta_portineria, MAXBUFF)
-	uscitaUtente_portineria = make(chan Richiesta_portineria, MAXBUFF)
+	entraUtente_portineria = make(chan Richiesta, MAXBUFF)
+	uscitaUtente_portineria = make(chan Richiesta, MAXBUFF)
 
 	for i := 0; i < 4; i++ {
-		entraUtente_biblioteca[i] = make(chan Richiesta_biblioteca, MAXBUFF)
-		entraUtente_biblioteca[i] = make(chan Richiesta_biblioteca, MAXBUFF)
+		entraUtente_biblioteca[i] = make(chan Richiesta, MAXBUFF)
+		entraUtente_biblioteca[i] = make(chan Richiesta, MAXBUFF)
 	}
 
 	// Esecuzione goroutine
