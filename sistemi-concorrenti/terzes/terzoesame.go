@@ -64,14 +64,15 @@ func auto(id int) {
 	fmt.Printf("[auto %d] sta salendo\n", id)
 
 	sleepRandTime(tempo) //TEMPO ARBITRARIO NEL QUALE sale
-
+	risposta := 0
 	uscitaauto[salita] <- r
-	<-r.ack
+	risposta = <-r.ack
 	fmt.Printf("[auto %d] e' salita\n", id)
 
 	tempo = rand.Intn(ATTESA)
 
 	sleepRandTime(tempo) //TEMPO ARBITRARIO NEL QUALE STA parcheggiato
+	r.id = risposta
 	entraauto[discesa] <- r
 	<-r.ack
 	fmt.Printf("[auto %d] sta scendendo\n", id)
@@ -188,10 +189,12 @@ func strada() {
 			r.ack <- 1
 		case r := <-when(spazzaneve == false && len(entraspazzaneve[discesa]) == 0 && len(entracamper[discesa]) == 0 && campersalita == 0, entraauto[discesa]):
 			autodiscesa++
-			if autoparkedMAX == 0 {
+			if r.id == 1 {
 				autoparked--
-			} else {
+
+			} else if r.id == 2 {
 				autoparkedMAX--
+
 			}
 			if salitalibera && discesalibera {
 				print("ciao")
@@ -228,12 +231,15 @@ func strada() {
 			//fatto
 		case r := <-when((autoparked < NS || autoparkedMAX+camperparkedMAX < NM) && spazzaneve == false && camperdiscesa == 0 && len(entraspazzaneve[discesa]) == 0 && len(entracamper[discesa]) == 0 && len(entraauto[discesa]) == 0 && len(entracamper[salita]) == 0, entraauto[salita]):
 			autosalita++
+			risposta := 0
 			if autoparked < NS {
 				autoparked++
+				risposta = 1
 			} else {
 				autoparkedMAX++
+				risposta = 2
 			}
-			r.ack <- 1
+			r.ack <- risposta
 			//fatto
 		case r := <-uscitaauto[salita]: //
 			autosalita--
